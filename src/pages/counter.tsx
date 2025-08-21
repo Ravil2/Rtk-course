@@ -1,4 +1,4 @@
-import reactLogo from './assets/react.svg'
+import reactLogo from '../assets/react.svg'
 import viteLogo from '/vite.svg'
 import { useAppDispatch, useAppSelector } from '../hooks/redux.hook'
 import { decrementBy, getCount, incrementBy } from '../store/counter'
