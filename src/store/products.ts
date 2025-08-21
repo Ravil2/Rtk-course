@@ -54,23 +54,24 @@ export const loadProductsList =
       ? (new Date().getTime() - new Date(lastFetch).getTime()) / 1000 / 60 > 10
       : true
 
-    dispatch(productsRequested())
+    if (isOutDated) {
+      dispatch(productsRequested())
+      try {
+        const response = await fetch('https://dummyjson.com/products')
 
-    try {
-      const response = await fetch('https://dummyjson.com/products')
+        if (!response.ok) {
+          throw new Error('Не удалось загрузить продукты')
+        }
 
-      if (!response.ok) {
-        throw new Error('Не удалось загрузить продукты')
+        const data = await response.json()
+        dispatch(productsReceived(data.products))
+      } catch (error) {
+        dispatch(
+          productsFailed(
+            error instanceof Error ? error.message : 'Неизвестная ошибка',
+          ),
+        )
       }
-
-      const data = await response.json()
-      dispatch(productsReceived(data.products))
-    } catch (error) {
-      dispatch(
-        productsFailed(
-          error instanceof Error ? error.message : 'Неизвестная ошибка',
-        ),
-      )
     }
   }
 
