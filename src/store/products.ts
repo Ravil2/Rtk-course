@@ -1,12 +1,16 @@
 import { createSlice, type Dispatch } from '@reduxjs/toolkit'
-import type { RootState } from '@reduxjs/toolkit/query'
+import type { RootState } from './store'
 
-interface IProduct {
+export interface IProduct {
   id: number
   title: string
-  description: string
   price: number
+  quantity: number
+  total: number
+  discountPercentage: number
+  discountedTotal: number
   thumbnail: string
+  description: string
 }
 
 interface IProductStore {
@@ -23,7 +27,7 @@ const initialState: IProductStore = {
   lastFetch: null,
 }
 
-export const productSlice = createSlice({
+export const productsSlice = createSlice({
   name: 'products',
   initialState,
   reducers: {
@@ -43,7 +47,7 @@ export const productSlice = createSlice({
   },
 })
 
-const { reducer: productsReducer, actions } = productSlice
+const { reducer: productsReducer, actions } = productsSlice
 const { productsRequested, productsReceived, productsFailed } = actions
 
 export const loadProductsList =

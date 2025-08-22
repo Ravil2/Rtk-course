@@ -8,15 +8,15 @@ import {
 } from '@ant-design/icons'
 import {
   Button,
-  Card,
-  Col,
-  Flex,
   Layout,
   Menu,
-  Row,
-  Spin,
   theme,
+  Card,
+  Col,
+  Row,
   Typography,
+  Flex,
+  Spin,
 } from 'antd'
 import {
   getProducts,
@@ -24,17 +24,18 @@ import {
   loadProductsList,
 } from '../store/products'
 import { useAppDispatch, useAppSelector } from '../hooks/redux.hook'
-const { Meta } = Card
+import { addToCart } from '../store/cart'
 
+const { Meta } = Card
 const { Header, Sider, Content } = Layout
 
 const ProductsPage: React.FC = () => {
-  const [collapsed, setCollapsed] = useState([])
+  const [collapsed, setCollapsed] = useState(false)
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken()
-  const dispatch = useAppDispatch()
 
+  const dispatch = useAppDispatch()
   const products = useAppSelector(getProducts)
   const isLoading = useAppSelector(getProductsLoading)
 
@@ -45,49 +46,61 @@ const ProductsPage: React.FC = () => {
   return (
     <Layout style={{ width: '100%', minHeight: '100vh' }}>
       <Sider trigger={null} collapsible collapsed={collapsed}>
-        <div className="demo-logo-vertical" />
+        <div
+          style={{
+            height: 64,
+            margin: 16,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            background: 'rgba(255,255,255,.2)',
+            borderRadius: 8,
+            color: 'white',
+            fontWeight: 'bold',
+            fontSize: '24px',
+            textAlign: 'center',
+          }}
+        >
+          RTK-Cart
+        </div>
         <Menu
           theme="dark"
           mode="inline"
           defaultSelectedKeys={['1']}
           items={[
-            {
-              key: '1',
-              icon: <UserOutlined />,
-              label: 'nav 1',
-            },
-            {
-              key: '2',
-              icon: <VideoCameraOutlined />,
-              label: 'nav 2',
-            },
-            {
-              key: '3',
-              icon: <UploadOutlined />,
-              label: 'nav 3',
-            },
+            { key: '1', icon: <UserOutlined />, label: 'nav 1' },
+            { key: '2', icon: <VideoCameraOutlined />, label: 'nav 2' },
+            { key: '3', icon: <UploadOutlined />, label: 'nav 3' },
           ]}
         />
       </Sider>
+
       <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }}>
+        <Header
+          style={{
+            padding: '0 16px',
+            background: colorBgContainer,
+            display: 'flex',
+            alignItems: 'center',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+          }}
+        >
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={() => setCollapsed(!collapsed)}
-            style={{
-              fontSize: '16px',
-              width: 64,
-              height: 64,
-            }}
+            style={{ fontSize: 18 }}
           />
+          <Typography.Title level={4} style={{ margin: 0, marginLeft: 12 }}>
+            Магазин
+          </Typography.Title>
         </Header>
 
         <Content
           style={{
             margin: '24px 16px',
             padding: 24,
-            minHeight: 280,
+            minHeight: 'calc(100vh - 112px)',
             background: colorBgContainer,
             borderRadius: borderRadiusLG,
           }}
@@ -97,7 +110,6 @@ const ProductsPage: React.FC = () => {
               style={{
                 width: '100%',
                 height: '100%',
-                display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
               }}
@@ -105,56 +117,60 @@ const ProductsPage: React.FC = () => {
               <Spin size="large" />
             </Flex>
           ) : (
-            <Row gutter={[16, 16]}>
-              {products.map((product) => {
-                return (
-                  <Col
-                    xs={24}
-                    sm={12}
-                    md={8}
-                    lg={6}
-                    xl={4}
-                    span={3}
-                    key={product.id}
-                  >
-                    <Card
-                      hoverable
-                      style={{
-                        width: '100%',
-                        height: '450px',
-                      }}
-                      cover={
-                        <img
-                          alt={product.title}
-                          src={product.thumbnail}
-                          style={{ height: '230px' }}
-                        />
-                      }
-                    >
-                      <Meta
-                        title={product.title}
-                        description={
-                          <Flex
-                            vertical
-                            gap={6}
-                            justify="space-between"
-                            style={{ minHeight: '140px' }}
-                          >
-                            <Typography.Text>
-                              {product.description.length > 100
-                                ? `${product.description.slice(0, 100)}...`
-                                : product.description}
-                            </Typography.Text>
-                            <Typography.Text style={{ fontWeight: 'bold' }}>
-                              {product.price}$
-                            </Typography.Text>
-                          </Flex>
-                        }
+            <Row gutter={[20, 20]}>
+              {products.map((product) => (
+                <Col span={6} key={product.id}>
+                  <Card
+                    hoverable
+                    style={{
+                      width: '100%',
+                      height: 480,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      borderRadius: 12,
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                    }}
+                    cover={
+                      <img
+                        alt={product.title}
+                        src={product.thumbnail}
+                        style={{
+                          height: 220,
+                          objectFit: 'cover',
+                          borderTopLeftRadius: 12,
+                          borderTopRightRadius: 12,
+                        }}
                       />
-                    </Card>
-                  </Col>
-                )
-              })}
+                    }
+                  >
+                    <Meta
+                      title={product.title}
+                      description={
+                        <Flex vertical gap={8} style={{ minHeight: 140 }}>
+                          <Typography.Text style={{ flex: 1 }}>
+                            {product.description.length > 90
+                              ? `${product.description.slice(0, 90)}...`
+                              : product.description}
+                          </Typography.Text>
+                          <Typography.Text
+                            style={{ fontWeight: 'bold', fontSize: 16 }}
+                          >
+                            {product.price}$
+                          </Typography.Text>
+                          <Button
+                            type="primary"
+                            block
+                            onClick={() => dispatch(addToCart(product))}
+                          >
+                            Добавить в корзину
+                          </Button>
+                        </Flex>
+                      }
+                    />
+                  </Card>
+                </Col>
+              ))}
             </Row>
           )}
         </Content>
